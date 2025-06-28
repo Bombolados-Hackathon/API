@@ -7,7 +7,6 @@ class Lecture(Base):
     __tablename__ = "lectures"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    title = Column(String, nullable=False)
     raw_text = Column(Text, nullable=False)
     was_watched = Column(Boolean, default=False)           # ← renomeado
     id_subject = Column(Integer, ForeignKey("subjects.id"))

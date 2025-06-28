@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.db.models.tasks import Task
 from app.db.models.users import User
-from .questions import create_questions
+from app.crud.questions import create_questions
 
 
 def create_task(db: Session, subject_id: int, user_id: int, xp_value: int) -> None:
@@ -16,8 +16,8 @@ def create_task(db: Session, subject_id: int, user_id: int, xp_value: int) -> No
     )
     db.add(task)
     db.commit()
-    create_questions(db, task.id, user_id)  # cria as perguntas
     db.refresh(task)
+    create_questions(db, task.id, user_id)
 
 
 def complete_task(db: Session, task_id: int) -> Optional[int]:

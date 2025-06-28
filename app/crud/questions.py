@@ -8,7 +8,7 @@ from app.crud.lectures import get_random_lecture
 def create_questions(db: Session, task_id: int, user_id: int) -> None:
     for i in range(7):
         lecture = get_random_lecture(db, user_id)
-        ollama = Ollama(lecture)
+        ollama = Ollama(lecture, task_id)
         question_type = get_random_question_type()
 
         if question_type == 'multiple_choice':

@@ -8,12 +8,13 @@ from ..db.models.matching_pairs import MatchingPair
 from ..db.models.questions import Question
 from ..db.models.questions import QuestionType
 from ..db.models.lectures import Lecture  #
-from consts import tf_prompt, mcq_prompt, matching_prompt
+from .consts import tf_prompt, mcq_prompt, matching_prompt
 
 
 class Ollama:
-    def __init__(self, lecture: Lecture, model="deepseek-r1:14b"):
+    def __init__(self, lecture: Lecture, task_id: int, model="deepseek-r1:14b"):
         self.lecture = lecture
+        self.task_id = task_id
         self.kernel = Kernel()
         chat_completion = OllamaChatCompletion(ai_model_id=model)
         self.kernel.add_service(chat_completion)
@@ -31,7 +32,7 @@ class Ollama:
         prompt_text = lines[0].replace("Pergunta: ", "")
         answer_text = lines[1].split(":")[-1].strip().lower() in ["verdadeiro", "true"]
 
-        question = Question(question_type=QuestionType.true_false, title=prompt_text)
+        question = Question(question_type=QuestionType.true_false, title=prompt_text, task_id=self.task_id)
         tf_answer = TFAnswer(correct=answer_text)
 
         return question, tf_answer
@@ -47,7 +48,7 @@ class Ollama:
             options.append(text)
         correct_letter = lines[5].split(":")[-1].strip().upper()
 
-        question = Question(question_type=QuestionType.multiple_choice, title=prompt_text)
+        question = Question(question_type=QuestionType.multiple_choice, title=prompt_text, task_id=self.task_id)
         mcq_options = []
         for idx, opt_text in enumerate(options):
             mcq_options.append(
@@ -68,7 +69,7 @@ class Ollama:
                 left, right = line.split(" - ")
                 pairs.append((left.strip(" 123456789. "), right.strip()))
 
-        question = Question(question_type=QuestionType.matching, prompt=prompt_text)
+        question = Question(question_type=QuestionType.matching, title=prompt_text, task_id=self.task_id)
         matching_pairs = [
             MatchingPair(left_item=left, right_item=right)
             for left, right in pairs
