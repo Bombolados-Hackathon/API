@@ -26,18 +26,18 @@ class Ollama:
         output = re.sub(r"<think>.*?</think>", '', str(result), flags=re.DOTALL).strip()
         return output
 
-    async def generate_tf_question(self):
+    async def generate_tf_question(self) -> tuple[Question, TFAnswer]:
         output = await self._invoke_prompt(tf_prompt)
         lines = output.strip().split("\n")
         prompt_text = lines[0].replace("Pergunta: ", "")
         answer_text = lines[1].split(":")[-1].strip().lower() in ["verdadeiro", "true"]
 
-        question = Question(question_type=QuestionType.true_false, title=prompt_text, task_id=self.task_id)
+        question = Question(question_type=QuestionType.true_false, title=prompt_text, task_id=self.task_id, lecture_id=self.lecture.id)
         tf_answer = TFAnswer(correct=answer_text)
 
         return question, tf_answer
 
-    async def generate_mcq_question(self):
+    async def generate_mcq_question(self) -> tuple[Question, list[MCQOption]]:
         output = await self._invoke_prompt(mcq_prompt)
         lines = output.strip().split("\n")
         prompt_text = lines[0].replace("Pergunta: ", "")
@@ -48,18 +48,18 @@ class Ollama:
             options.append(text)
         correct_letter = lines[5].split(":")[-1].strip().upper()
 
-        question = Question(question_type=QuestionType.multiple_choice, title=prompt_text, task_id=self.task_id)
+        question = Question(question_type=QuestionType.multiple_choice, title=prompt_text, task_id=self.task_id, lecture_id=self.lecture.id)
         mcq_options = []
         for idx, opt_text in enumerate(options):
             mcq_options.append(
                 MCQOption(
                     option_text=opt_text,
-                    is_correct=(chr(65 + idx) == correct_letter)
+                    is_correct=(chr(65 + idx) == correct_letter),
                 )
             )
         return question, mcq_options
 
-    async def generate_matching_question(self):
+    async def generate_matching_question(self) -> tuple[Question, list[MatchingPair]]:
         output = await self._invoke_prompt(matching_prompt)
         lines = output.strip().split("\n")
         prompt_text = lines[0].replace("Pergunta: ", "")
@@ -69,7 +69,7 @@ class Ollama:
                 left, right = line.split(" - ")
                 pairs.append((left.strip(" 123456789. "), right.strip()))
 
-        question = Question(question_type=QuestionType.matching, title=prompt_text, task_id=self.task_id)
+        question = Question(question_type=QuestionType.matching, title=prompt_text, task_id=self.task_id, lecture_id=self.lecture.id)
         matching_pairs = [
             MatchingPair(left_item=left, right_item=right)
             for left, right in pairs

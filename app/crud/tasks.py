@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Any
 
 from sqlalchemy.orm import Session
 
@@ -7,7 +7,7 @@ from app.db.models.users import User
 from app.crud.questions import create_questions
 
 
-def create_task(db: Session, subject_id: int, user_id: int, xp_value: int) -> None:
+async def create_task(db: Session, subject_id: int, user_id: int, xp_value: int) -> None:
     task = Task(
         xp_value=xp_value,
         is_finished=False,
@@ -17,7 +17,25 @@ def create_task(db: Session, subject_id: int, user_id: int, xp_value: int) -> No
     db.add(task)
     db.commit()
     db.refresh(task)
-    create_questions(db, task.id, user_id)
+    await create_questions(db, task.id, user_id)
+
+def completed_task(db: Session, user_id: int) -> type[Task] | None:
+    """
+    Retorna uma lista de tasks concluídas (`is_finished = True`) do usuário.
+
+    Args:
+        db: sessão SQLAlchemy aberta.
+        user_id: ID do usuário (users.id).
+
+    Returns:
+        Lista de Task concluídas ou vazia se não houver registros.
+    """
+    return (
+        db.query(Task)
+        .filter(Task.id_user == user_id, Task.is_finished.is_(True))
+        .order_by(Task.id)
+        .first()
+    )
 
 
 def complete_task(db: Session, task_id: int) -> Optional[int]:
