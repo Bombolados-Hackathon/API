@@ -1,13 +1,9 @@
-from typing import Optional
+from typing import Optional, Tuple
 
 from sqlalchemy.orm import Session
 
 from app.db.models.tasks import Task
 from app.db.models.users import User
-
-
-def create_task(db: Session, subject_id: int, user_id: int) -> None:
-    pass
 
 
 def complete_task(db: Session, task_id: int) -> Optional[int]:
