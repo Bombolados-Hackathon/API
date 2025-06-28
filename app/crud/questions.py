@@ -1,6 +1,5 @@
 from sqlalchemy.orm import Session
 
-from app.db.models.question_task import QuestionTask
 from app.helper import get_random_question_type
 from app.services.ollama import Ollama
 from app.crud.lectures import get_random_lecture
@@ -36,10 +35,3 @@ def create_questions(db: Session, task_id: int, user_id: int) -> None:
         else:
             raise ValueError(f"Unknown question type: {question_type}")
 
-        question_task = QuestionTask(
-            id_question=question.id,
-            id_task=task_id,
-        )
-        db.add(question_task)
-        db.commit()
-        db.refresh(question_task)

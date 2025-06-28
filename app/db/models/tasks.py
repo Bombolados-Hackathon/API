@@ -17,4 +17,4 @@ class Task(Base):
 
     subject = relationship("Subject", back_populates="tasks") # NOVO
     user = relationship("User", back_populates="tasks")
-    questions = relationship("QuestionTask", back_populates="task", cascade="all, delete")
+    questions = relationship("Question", back_populates="task", cascade="all, delete")  # ← NOVO

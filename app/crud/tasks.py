@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.db.models.tasks import Task
 from app.db.models.users import User
+from .questions import create_questions
 
 
 def create_task(db: Session, subject_id: int, user_id: int, xp_value: int) -> None:
@@ -15,6 +16,7 @@ def create_task(db: Session, subject_id: int, user_id: int, xp_value: int) -> No
     )
     db.add(task)
     db.commit()
+    create_questions(db, task.id, user_id)  # cria as perguntas
     db.refresh(task)
 
 
@@ -28,14 +30,14 @@ def complete_task(db: Session, task_id: int) -> Optional[int]:
     """
     task: Task | None = db.get(Task, task_id)
     if task is None or task.id_user is None:
-        return None                       # Task inexistente ou “solta”
+        return None  # Task inexistente ou “solta”
 
-    user: User = task.user                # relacionamento ORM (Task.user)
+    user: User = task.user  # relacionamento ORM (Task.user)
 
-    if not task.is_finished:              # só processa 1ª vez
+    if not task.is_finished:  # só processa 1ª vez
         task.is_finished = True
         user.xp += task.xp_value
-        db.commit()                       # persiste ambas as alterações
-        db.refresh(user)                  # pega xp atualizado
+        db.commit()  # persiste ambas as alterações
+        db.refresh(user)  # pega xp atualizado
 
     return task.xp_value
