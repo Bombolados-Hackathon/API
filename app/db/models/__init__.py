@@ -13,5 +13,4 @@ from .questions import Question  # noqa: F401
 from .mcq_options import MCQOption  # noqa: F401
 from .tf_answers import TFAnswer  # noqa: F401
 from .matching_pairs import MatchingPair  # noqa: F401
-from .lecture_question import LectureQuestion  # noqa: F401
 from .question_task import QuestionTask  # noqa: F401

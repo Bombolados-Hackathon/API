@@ -9,12 +9,8 @@ class Lecture(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     title = Column(String, nullable=False)
     raw_text = Column(Text, nullable=False)
-    has_watched = Column(Boolean, default=False)          # NOVO
+    was_watched = Column(Boolean, default=False)           # ← renomeado
     id_subject = Column(Integer, ForeignKey("subjects.id"))
 
     subject = relationship("Subject", back_populates="lectures")
-    lecture_questions = relationship(
-        "LectureQuestion",
-        back_populates="lecture",
-        cascade="all, delete"
-    )
+    questions = relationship("Question", back_populates="lecture", cascade="all, delete")  # ← novo

@@ -6,8 +6,16 @@ from app.db.models.tasks import Task
 from app.db.models.users import User
 
 
-def create_task(db: Session, subject_id: int, user_id: int) -> None:
-    pass
+def create_task(db: Session, subject_id: int, user_id: int, xp_value: int) -> None:
+    task = Task(
+        xp_value=xp_value,
+        is_finished=False,
+        id_subject=subject_id,
+        id_user=user_id,
+    )
+    db.add(task)
+    db.commit()
+    db.refresh(task)
 
 
 def complete_task(db: Session, task_id: int) -> Optional[int]:

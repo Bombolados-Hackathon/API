@@ -31,7 +31,7 @@ class Ollama:
         prompt_text = lines[0].replace("Pergunta: ", "")
         answer_text = lines[1].split(":")[-1].strip().lower() in ["verdadeiro", "true"]
 
-        question = Question(question_type=QuestionType.true_false, prompt=prompt_text)
+        question = Question(question_type=QuestionType.true_false, title=prompt_text)
         tf_answer = TFAnswer(correct=answer_text)
 
         return question, tf_answer
@@ -47,7 +47,7 @@ class Ollama:
             options.append(text)
         correct_letter = lines[5].split(":")[-1].strip().upper()
 
-        question = Question(question_type=QuestionType.multiple_choice, prompt=prompt_text)
+        question = Question(question_type=QuestionType.multiple_choice, title=prompt_text)
         mcq_options = []
         for idx, opt_text in enumerate(options):
             mcq_options.append(
